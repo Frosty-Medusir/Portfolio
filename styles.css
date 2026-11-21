@@ -96,6 +96,53 @@ body.dark {
 .theme-toggle:hover { transform: rotate(20deg); background: var(--surface); }
 .theme-icon { display: block; font-size: 15px; }
 
+.cursor-overlay {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c9362b;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: multiply;
+  transition:
+    width 220ms cubic-bezier(.2, .8, .2, 1),
+    height 220ms cubic-bezier(.2, .8, .2, 1),
+    opacity 160ms ease;
+  opacity: 0;
+}
+.cursor-overlay.active {
+  width: 76px;
+  height: 76px;
+  opacity: 0.72;
+}
+.cursor-overlay.visible { opacity: 0.72; }
+.cursor-overlay.visible.active { opacity: 0.82; }
+
+.red-hover,
+.nav a,
+.profile-links a,
+.text-link,
+.brand,
+.project-card h3,
+.stack-grid h3,
+.section-heading h2 {
+  transition: color 180ms ease;
+}
+.red-hover:hover,
+.nav a:hover,
+.profile-links a:hover,
+.text-link:hover,
+.brand:hover,
+.project-card:hover h3,
+.stack-grid h3:hover,
+.section-heading h2:hover {
+  color: var(--accent);
+}
+
 .hero {
   min-height: 790px;
   height: 100vh;
