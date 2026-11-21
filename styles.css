@@ -36,12 +36,10 @@ a:hover { color: var(--accent); }
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
 }
-.home-link, .page-nav a {
+.home-link {
   color: var(--muted);
   font-size: 11px;
 }
-.page-nav { display: flex; flex-wrap: wrap; gap: 16px; }
-.page-nav a[aria-current="page"] { color: var(--text); }
 .page-content { margin-top: 68px; }
 .page-kicker {
   margin: 0 0 14px;
@@ -142,7 +140,7 @@ a:hover { color: var(--accent); }
   gap: 9px;
   margin-bottom: 12px;
 }
-.brand-symbol { width: 25px; height: 20px; object-fit: contain; }
+.brand-symbol { width: 38px; height: 38px; object-fit: contain; }
 .profile-header h1 {
   margin: 0;
   font-size: 14px;
@@ -229,7 +227,7 @@ a:hover { color: var(--accent); }
   margin: 0 0 0 14px;
 }
 .home-link { display: inline-flex; align-items: center; gap: 8px; }
-.home-link img { width: 18px; height: 14px; object-fit: contain; }
+.home-link img { width: 30px; height: 30px; object-fit: contain; }
 .location-dot {
   width: 6px;
   height: 6px;
@@ -365,7 +363,6 @@ footer a { color: var(--muted); }
 @media (max-width: 600px) {
   .page-shell { width: min(100% - 36px, 440px); margin-top: 26px; }
   .page-top { align-items: flex-start; flex-direction: column; gap: 14px; }
-  .page-nav { gap: 18px; }
   .page-content { margin-top: 48px; }
   .about-page { grid-template-columns: 1fr; gap: 28px; }
   .portrait { width: min(100%, 300px); }
