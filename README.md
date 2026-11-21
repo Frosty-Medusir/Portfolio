@@ -1,6 +1,12 @@
 # Joseph Otieno — Portfolio
 
-A minimal portfolio for a Nairobi-based aspiring data professional and product builder.
+A minimal multi-page portfolio for a Nairobi-based aspiring data professional and product builder.
+
+Pages: home, About, Projects, Experience, and Contact. The About page uses the
+provided portrait; the Projects page includes a simple X Topic Tracker pipeline
+overview.
+
+Footer icons are from Hugeicons and were supplied for this portfolio.
 
 ## Run locally
 
