@@ -48,7 +48,7 @@ if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
   });
 
   const hoverTargets = document.querySelectorAll(
-    "a, button, .project-card, .stack-grid h3, .section-heading h2"
+    "a, button, .hero h1, .project-card, .stack-grid h3, .section-heading h2"
   );
 
   hoverTargets.forEach((target) => {

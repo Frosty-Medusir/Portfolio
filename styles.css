@@ -104,7 +104,7 @@ body.dark {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #c9362b;
+  background: #8f1d18;
   pointer-events: none;
   transform: translate(-50%, -50%);
   mix-blend-mode: multiply;
@@ -123,6 +123,7 @@ body.dark {
 .cursor-overlay.visible.active { opacity: 0.82; }
 
 .red-hover,
+.hero h1,
 .nav a,
 .profile-links a,
 .text-link,
@@ -141,6 +142,9 @@ body.dark {
 .stack-grid h3:hover,
 .section-heading h2:hover {
   color: var(--accent);
+}
+.hero h1:hover {
+  color: #8f1d18;
 }
 
 .hero {
