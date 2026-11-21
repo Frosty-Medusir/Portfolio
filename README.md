@@ -1,6 +1,6 @@
 # Joseph Otieno — Portfolio
 
-A responsive portfolio for an emerging Cloud Data Engineer and ALX student.
+A minimal portfolio for a Nairobi-based aspiring data professional and product builder.
 
 ## Run locally
 

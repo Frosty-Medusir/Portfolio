@@ -1,32 +1,20 @@
 const themeToggle = document.querySelector(".theme-toggle");
 const savedTheme = localStorage.getItem("theme");
 
-if (savedTheme === "dark") {
-  document.body.classList.add("dark");
-}
-
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "theme",
-    document.body.classList.contains("dark") ? "dark" : "light"
+const setTheme = (theme) => {
+  const isDark = theme === "dark";
+  document.body.classList.toggle("dark", isDark);
+  themeToggle.setAttribute(
+    "aria-label",
+    isDark ? "Switch to light theme" : "Switch to dark theme"
   );
-});
+};
 
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.12 }
-);
-
-document.querySelectorAll(".reveal").forEach((element) => {
-  revealObserver.observe(element);
+setTheme(savedTheme);
+themeToggle.addEventListener("click", () => {
+  const nextTheme = document.body.classList.contains("dark") ? "light" : "dark";
+  setTheme(nextTheme);
+  localStorage.setItem("theme", nextTheme);
 });
 
 document.querySelector("#year").textContent = new Date().getFullYear();
@@ -43,13 +31,11 @@ if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     cursor.style.top = `${event.clientY}px`;
   });
 
-  document.addEventListener("pointerleave", () => {
+  document.documentElement.addEventListener("pointerleave", () => {
     cursor.classList.remove("visible", "active");
   });
 
-  const hoverTargets = document.querySelectorAll(
-    "a, button, .hero h1, .project-card, .stack-grid h3, .section-heading h2"
-  );
+  const hoverTargets = document.querySelectorAll("a, button, h1, h2, h3");
 
   hoverTargets.forEach((target) => {
     target.addEventListener("pointerenter", () => cursor.classList.add("active"));
