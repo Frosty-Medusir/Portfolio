@@ -196,7 +196,14 @@ a:hover { color: var(--accent); }
   padding: 14px 0;
 }
 .say-hi { display: flex; align-items: center; gap: 10px; }
-.say-hi span { color: var(--muted); }
+.say-hi img {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+  opacity: 0.7;
+  transition: opacity 160ms ease;
+}
+.say-hi:hover img { opacity: 1; }
 .footer-socials { display: flex; align-items: center; gap: 14px; }
 .footer-socials img {
   display: block;
