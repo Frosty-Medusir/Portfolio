@@ -7,6 +7,7 @@ provided portrait; the Projects page includes a simple X Topic Tracker pipeline
 overview.
 
 Footer icons are from Hugeicons and were supplied for this portfolio.
+The custom red/yellow brand mark is an SVG in `assets/brand.svg`.
 
 ## Run locally
 
