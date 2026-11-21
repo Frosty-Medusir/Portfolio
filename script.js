@@ -31,24 +31,31 @@ if (greetingElement && timeElement) {
     "Australia/Sydney": "Australia",
   };
 
-  const visitorTimeZone =
-    Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-  const locationName =
-    locationNames[visitorTimeZone] ||
-    visitorTimeZone.split("/").pop().replaceAll("_", " ");
-
+  let activeTimeZone;
+  let localTimeFormatter;
   const updateLocalTime = () => {
     const now = new Date();
-    const timeText = new Intl.DateTimeFormat("en-GB", {
-      timeZone: visitorTimeZone,
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-    }).format(now);
+    const visitorTimeZone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
-    greetingElement.textContent = `hi from ${locationName}`;
+    if (visitorTimeZone !== activeTimeZone) {
+      activeTimeZone = visitorTimeZone;
+      const locationName =
+        locationNames[visitorTimeZone] ||
+        visitorTimeZone.split("/").pop()?.replaceAll("_", " ") ||
+        "your local time zone";
+
+      greetingElement.textContent = `hi from ${locationName}`;
+      localTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: visitorTimeZone,
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      });
+    }
+
     timeElement.dateTime = now.toISOString();
-    timeElement.textContent = timeText;
+    timeElement.textContent = localTimeFormatter.format(now);
   };
 
   updateLocalTime();
