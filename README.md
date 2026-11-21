@@ -8,6 +8,7 @@ overview.
 
 Footer icons are from Hugeicons and were supplied for this portfolio.
 The custom red/yellow brand mark is an SVG in `assets/brand.svg`.
+The home page shows Nairobi-local time and a browser-local visit count.
 
 ## Run locally
 
