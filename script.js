@@ -1,37 +1,58 @@
 document.querySelector("#year").textContent = new Date().getFullYear();
 
 const greetingElement = document.querySelector("#local-greeting");
-const timeElement = document.querySelector("#nairobi-time");
+const timeElement = document.querySelector("#local-time");
 
 if (greetingElement && timeElement) {
-  const nairobiHourFormatter = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Nairobi",
-    hour: "2-digit",
-    hourCycle: "h23",
-  });
-  const nairobiTimeFormatter = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Nairobi",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  });
-
-  const updateNairobiTime = () => {
-    const now = new Date();
-    const hour = Number(nairobiHourFormatter.format(now));
-
-    greetingElement.textContent =
-      hour >= 5 && hour < 12
-        ? "good morning in nairobi"
-        : hour >= 12 && hour < 17
-          ? "good afternoon in nairobi"
-          : "good evening in nairobi";
-    timeElement.dateTime = now.toISOString();
-    timeElement.textContent = nairobiTimeFormatter.format(now);
+  const locationNames = {
+    "Europe/Berlin": "Germany",
+    "Europe/Busingen": "Germany",
+    "Africa/Nairobi": "Nairobi, Kenya",
+    "Africa/Lagos": "Nigeria",
+    "Africa/Cairo": "Egypt",
+    "Africa/Johannesburg": "South Africa",
+    "Europe/London": "United Kingdom",
+    "Europe/Paris": "France",
+    "Europe/Madrid": "Spain",
+    "Europe/Rome": "Italy",
+    "Europe/Amsterdam": "Netherlands",
+    "Europe/Zurich": "Switzerland",
+    "America/New_York": "United States",
+    "America/Chicago": "United States",
+    "America/Denver": "United States",
+    "America/Los_Angeles": "United States",
+    "America/Toronto": "Canada",
+    "America/Vancouver": "Canada",
+    "America/Sao_Paulo": "Brazil",
+    "Asia/Dubai": "United Arab Emirates",
+    "Asia/Kolkata": "India",
+    "Asia/Singapore": "Singapore",
+    "Asia/Tokyo": "Japan",
+    "Australia/Sydney": "Australia",
   };
 
-  updateNairobiTime();
-  window.setInterval(updateNairobiTime, 30_000);
+  const visitorTimeZone =
+    Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  const locationName =
+    locationNames[visitorTimeZone] ||
+    visitorTimeZone.split("/").pop().replaceAll("_", " ");
+
+  const updateLocalTime = () => {
+    const now = new Date();
+    const timeText = new Intl.DateTimeFormat("en-GB", {
+      timeZone: visitorTimeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).format(now);
+
+    greetingElement.textContent = `hi from ${locationName}`;
+    timeElement.dateTime = now.toISOString();
+    timeElement.textContent = timeText;
+  };
+
+  updateLocalTime();
+  window.setInterval(updateLocalTime, 30_000);
 }
 
 const visitCountElement = document.querySelector("#visit-count");
