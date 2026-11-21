@@ -209,13 +209,24 @@ a:hover { color: var(--accent); }
   transition: opacity 160ms ease;
 }
 .footer-socials a:hover img { opacity: 1; }
-.location {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.local-status {
+  display: grid;
+  gap: 5px;
   margin: 40px 0 0;
   color: var(--muted);
   font-size: 11px;
+}
+.status-greeting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.status-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0 14px;
 }
 .home-link { display: inline-flex; align-items: center; gap: 8px; }
 .home-link img { width: 18px; height: 14px; object-fit: contain; }
