@@ -1,12 +1,12 @@
 :root {
-  --bg: #f2f0e9;
-  --surface: #e7e4da;
-  --text: #171816;
-  --muted: #686960;
-  --line: rgba(23, 24, 22, 0.16);
-  --accent: #ff5b35;
-  --green: #a6c5a1;
-  --card: #dedfd5;
+  --bg: #fff8df;
+  --surface: #f6edc2;
+  --text: #281915;
+  --muted: #80665b;
+  --line: rgba(40, 25, 21, 0.16);
+  --accent: #e94b35;
+  --green: #d8b92c;
+  --card: #efc94a;
 }
 
 * { box-sizing: border-box; }
@@ -20,12 +20,14 @@ body {
 }
 
 body.dark {
-  --bg: #141512;
-  --surface: #1d1f1a;
-  --text: #eeeee7;
-  --muted: #aaa99e;
-  --line: rgba(238, 238, 231, 0.16);
-  --card: #24261f;
+  --bg: #251812;
+  --surface: #382218;
+  --text: #fff7dc;
+  --muted: #d7bfb0;
+  --line: rgba(255, 247, 220, 0.16);
+  --accent: #ff5a3d;
+  --green: #eccb45;
+  --card: #c64a32;
 }
 
 .noise {
@@ -274,8 +276,8 @@ body.dark {
 }
 
 .visual-lakehouse {
-  background: #a9b5a4;
-  color: #171816;
+  background: #efc94a;
+  color: #281915;
 }
 .pipeline {
   position: absolute;
@@ -324,8 +326,8 @@ body.dark {
 .metric-row span { margin-top: 3px; font-size: 9px; text-transform: uppercase; }
 
 .visual-stream {
-  background: #23251f;
-  color: #ecede5;
+  background: #cf4430;
+  color: #fff8df;
 }
 .stream-chart {
   position: absolute;
@@ -368,7 +370,7 @@ body.dark {
 .stream-footer span { font-size: 9px; text-transform: uppercase; }
 .stream-footer strong { font-size: 24px; }
 
-.visual-orbit { background: #d8d5c9; color: #171816; }
+.visual-orbit { background: #f4dda1; color: #281915; }
 .orbit-wrap {
   position: absolute;
   width: 300px;
@@ -473,6 +475,10 @@ body.dark {
   color: var(--muted);
   line-height: 1.7;
   font-size: 15px;
+}
+.contact-list {
+  display: grid;
+  gap: 4px;
 }
 .text-link {
   display: flex;
