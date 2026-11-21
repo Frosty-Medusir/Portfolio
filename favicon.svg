@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" fill="none">
-  <rect width="64" height="48" rx="10" fill="#08080a"/>
-  <path d="M37 9H25a15 15 0 1 0 0 30h12" stroke="#f0443b" stroke-width="9"/>
-  <path d="M27 9h12a15 15 0 1 1 0 30H27" stroke="#f1d83b" stroke-width="9"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 96" fill="none">
+  <rect width="130" height="96" rx="12" fill="#08080a"/>
+  <defs>
+    <linearGradient id="red" x1="14" y1="20" x2="70" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f42d3c"/>
+      <stop offset="1" stop-color="#f45635"/>
+    </linearGradient>
+    <linearGradient id="yellow" x1="60" y1="20" x2="116" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f0c91c"/>
+      <stop offset="1" stop-color="#ffe63b"/>
+    </linearGradient>
+  </defs>
+  <path d="M65 24a32 32 0 1 0 0 48" stroke="url(#red)" stroke-width="17" stroke-linecap="butt"/>
+  <path d="M65 24a32 32 0 1 1 0 48" stroke="url(#yellow)" stroke-width="17" stroke-linecap="butt"/>
 </svg>
