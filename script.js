@@ -7,7 +7,7 @@ if (greetingElement && timeElement) {
   const locationNames = {
     "Europe/Berlin": "Germany",
     "Europe/Busingen": "Germany",
-    "Africa/Nairobi": "Nairobi, Kenya",
+    "Africa/Nairobi": "Nairobi",
     "Africa/Lagos": "Nigeria",
     "Africa/Cairo": "Egypt",
     "Africa/Johannesburg": "South Africa",
@@ -32,6 +32,8 @@ if (greetingElement && timeElement) {
   };
 
   let activeTimeZone;
+  let activeLocationName;
+  let localHourFormatter;
   let localTimeFormatter;
   const updateLocalTime = () => {
     const now = new Date();
@@ -40,12 +42,16 @@ if (greetingElement && timeElement) {
 
     if (visitorTimeZone !== activeTimeZone) {
       activeTimeZone = visitorTimeZone;
-      const locationName =
+      activeLocationName =
         locationNames[visitorTimeZone] ||
         visitorTimeZone.split("/").pop()?.replaceAll("_", " ") ||
         "your local time zone";
 
-      greetingElement.textContent = `hi from ${locationName}`;
+      localHourFormatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: visitorTimeZone,
+        hour: "2-digit",
+        hourCycle: "h23",
+      });
       localTimeFormatter = new Intl.DateTimeFormat("en-GB", {
         timeZone: visitorTimeZone,
         hour: "2-digit",
@@ -54,6 +60,16 @@ if (greetingElement && timeElement) {
       });
     }
 
+    const hour = Number(localHourFormatter.format(now));
+    const greeting =
+      hour < 5 || hour >= 21
+        ? "good night"
+        : hour < 12
+          ? "good morning"
+          : hour < 17
+            ? "good afternoon"
+            : "good evening";
+    greetingElement.textContent = `${greeting} in ${activeLocationName}`;
     timeElement.dateTime = now.toISOString();
     timeElement.textContent = localTimeFormatter.format(now);
   };
@@ -63,22 +79,85 @@ if (greetingElement && timeElement) {
 }
 
 const visitCountElement = document.querySelector("#visit-count");
+const onlineCountElement = document.querySelector("#online-count");
 
-if (visitCountElement) {
-  try {
-    const storedCount = window.localStorage.getItem("portfolio-local-visits");
-    const previousCount = storedCount === null ? 0 : Number(storedCount);
-    if (!Number.isSafeInteger(previousCount) || previousCount < 0) {
-      throw new Error("Stored visit count is invalid.");
-    }
-
-    const visitCount = previousCount + 1;
-    window.localStorage.setItem("portfolio-local-visits", String(visitCount));
-    visitCountElement.textContent = `${visitCount} local ${
-      visitCount === 1 ? "visit" : "visits"
-    }`;
-  } catch (error) {
-    console.error("Could not update the local visit count.", error);
-    visitCountElement.textContent = "local visits unavailable";
+const setUnavailable = () => {
+  if (visitCountElement) {
+    visitCountElement.textContent = "visits unavailable";
   }
+  if (onlineCountElement) {
+    onlineCountElement.textContent = "here now unavailable";
+  }
+};
+
+let visitorId;
+let visitId;
+try {
+  visitorId = window.localStorage.getItem("portfolio-visitor-id");
+  if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    window.localStorage.setItem("portfolio-visitor-id", visitorId);
+  }
+  visitId = window.sessionStorage.getItem("portfolio-visit-id");
+  if (!visitId) {
+    visitId = crypto.randomUUID();
+    window.sessionStorage.setItem("portfolio-visit-id", visitId);
+  }
+} catch (error) {
+  console.error("Could not initialize visitor counting.", error);
+  setUnavailable();
+}
+
+if (visitorId && visitId) {
+  let requestPending = false;
+  let failureReported = false;
+  const updateVisitorCounts = async () => {
+    if (requestPending) return;
+    requestPending = true;
+    try {
+      const response = await fetch("/api/heartbeat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ visitorId, visitId }),
+      });
+      if (!response.ok) {
+        throw new Error(`Visitor count request failed (${response.status}).`);
+      }
+
+      const counts = await response.json();
+      if (
+        !Number.isSafeInteger(counts.visits) ||
+        counts.visits < 0 ||
+        !Number.isSafeInteger(counts.hereNow) ||
+        counts.hereNow < 0
+      ) {
+        throw new Error("Visitor count response was invalid.");
+      }
+
+      if (visitCountElement) {
+        visitCountElement.textContent = `${counts.visits} ${
+          counts.visits === 1 ? "visit" : "visits"
+        }`;
+      }
+      if (onlineCountElement) {
+        onlineCountElement.textContent = `${counts.hereNow} here now`;
+      }
+      failureReported = false;
+    } catch (error) {
+      if (!failureReported) {
+        console.error("Could not update shared visitor counts.", error);
+        failureReported = true;
+      }
+      setUnavailable();
+    } finally {
+      requestPending = false;
+    }
+  };
+
+  updateVisitorCounts();
+  window.setInterval(updateVisitorCounts, 30_000);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") updateVisitorCounts();
+  });
 }
