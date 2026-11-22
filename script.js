@@ -22,33 +22,6 @@ if (nairobiTimeElement) {
 }
 
 if (greetingElement && timeElement) {
-  const locationNames = {
-    "Europe/Berlin": "Germany",
-    "Europe/Busingen": "Germany",
-    "Africa/Nairobi": "Nairobi",
-    "Africa/Lagos": "Nigeria",
-    "Africa/Cairo": "Egypt",
-    "Africa/Johannesburg": "South Africa",
-    "Europe/London": "United Kingdom",
-    "Europe/Paris": "France",
-    "Europe/Madrid": "Spain",
-    "Europe/Rome": "Italy",
-    "Europe/Amsterdam": "Netherlands",
-    "Europe/Zurich": "Switzerland",
-    "America/New_York": "United States",
-    "America/Chicago": "United States",
-    "America/Denver": "United States",
-    "America/Los_Angeles": "United States",
-    "America/Toronto": "Canada",
-    "America/Vancouver": "Canada",
-    "America/Sao_Paulo": "Brazil",
-    "Asia/Dubai": "United Arab Emirates",
-    "Asia/Kolkata": "India",
-    "Asia/Singapore": "Singapore",
-    "Asia/Tokyo": "Japan",
-    "Australia/Sydney": "Australia",
-  };
-
   let activeTimeZone;
   let activeLocationName;
   let localHourFormatter;
@@ -61,9 +34,9 @@ if (greetingElement && timeElement) {
     if (visitorTimeZone !== activeTimeZone) {
       activeTimeZone = visitorTimeZone;
       activeLocationName =
-        locationNames[visitorTimeZone] ||
-        visitorTimeZone.split("/").pop()?.replaceAll("_", " ") ||
-        "your local time zone";
+        visitorTimeZone.includes("/") && !visitorTimeZone.startsWith("Etc/")
+          ? visitorTimeZone.split("/").pop()?.replaceAll("_", " ").toLowerCase()
+          : null;
 
       localHourFormatter = new Intl.DateTimeFormat("en-GB", {
         timeZone: visitorTimeZone,
@@ -87,7 +60,9 @@ if (greetingElement && timeElement) {
           : hour < 17
             ? "good afternoon"
             : "good evening";
-    greetingElement.textContent = `${greeting} in ${activeLocationName}`;
+    greetingElement.textContent = activeLocationName
+      ? `${greeting} in ${activeLocationName}`
+      : greeting;
     timeElement.dateTime = now.toISOString();
     timeElement.textContent = localTimeFormatter.format(now);
   };
