@@ -46,6 +46,12 @@ def initialize_database():
             )
             """
         )
+        connection.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_active_visitors_last_seen
+            ON active_visitors (last_seen)
+            """
+        )
         connection.commit()
 
 
@@ -93,8 +99,34 @@ class PortfolioHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(body)
+
+    def send_empty(self, status):
+        self.send_response(status)
+        self.send_header("Content-Length", "0")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+
+    def do_HEAD(self):
+        path = urlsplit(self.path).path
+        if path == "/api/status":
+            try:
+                now = int(time.time())
+                with closing(connect_database()) as connection:
+                    with connection:
+                        get_counts(connection, now)
+                self.send_empty(200)
+            except sqlite3.Error:
+                logging.exception("Could not check visitor database")
+                self.send_empty(503)
+            return
+        if path.startswith("/api/"):
+            self.send_empty(404)
+            return
+        super().do_HEAD()
 
     def do_GET(self):
         path = urlsplit(self.path).path
@@ -107,7 +139,7 @@ class PortfolioHandler(SimpleHTTPRequestHandler):
                 self.send_json(200, {"ok": True, **counts})
             except sqlite3.Error:
                 logging.exception("Could not read visitor counts")
-                self.send_json(500, {"error": "Visitor counts are unavailable"})
+                self.send_json(503, {"error": "Visitor counts are unavailable"})
             return
         if path.startswith("/api/"):
             self.send_json(404, {"error": "API endpoint not found"})
@@ -175,7 +207,7 @@ class PortfolioHandler(SimpleHTTPRequestHandler):
             self.send_json(200, counts)
         except sqlite3.Error:
             logging.exception("Could not update visitor counts")
-            self.send_json(500, {"error": "Visitor counts are unavailable"})
+            self.send_json(503, {"error": "Visitor counts are unavailable"})
 
 
 def main():
