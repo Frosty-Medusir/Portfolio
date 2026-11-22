@@ -14,7 +14,7 @@ if (nairobiTimeElement) {
   const updateNairobiTime = () => {
     const now = new Date();
     nairobiTimeElement.dateTime = now.toISOString();
-    nairobiTimeElement.textContent = `Nairobi time ${nairobiTimeFormatter.format(now)}`;
+    nairobiTimeElement.textContent = `here now: ${nairobiTimeFormatter.format(now)}`;
   };
 
   updateNairobiTime();
