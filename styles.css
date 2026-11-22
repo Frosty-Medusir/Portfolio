@@ -33,7 +33,7 @@ body {
 .profile > :nth-child(6),
 .page-shell > :nth-child(6) { animation-delay: 300ms; }
 @keyframes portfolio-reveal {
-  from { opacity: 0; filter: blur(4px); transform: translateY(7px); }
+  from { opacity: 0; filter: blur(8px); transform: translateY(7px); }
   to { opacity: 1; filter: blur(0); transform: translateY(0); }
 }
 a { color: inherit; text-decoration: none; }
