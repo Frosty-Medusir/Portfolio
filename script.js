@@ -2,6 +2,24 @@ document.querySelector("#year").textContent = new Date().getFullYear();
 
 const greetingElement = document.querySelector("#local-greeting");
 const timeElement = document.querySelector("#local-time");
+const nairobiTimeElement = document.querySelector("#nairobi-time");
+
+if (nairobiTimeElement) {
+  const nairobiTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Nairobi",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  });
+  const updateNairobiTime = () => {
+    const now = new Date();
+    nairobiTimeElement.dateTime = now.toISOString();
+    nairobiTimeElement.textContent = `Nairobi time ${nairobiTimeFormatter.format(now)}`;
+  };
+
+  updateNairobiTime();
+  window.setInterval(updateNairobiTime, 30_000);
+}
 
 if (greetingElement && timeElement) {
   const locationNames = {
@@ -79,14 +97,10 @@ if (greetingElement && timeElement) {
 }
 
 const visitCountElement = document.querySelector("#visit-count");
-const onlineCountElement = document.querySelector("#online-count");
 
 const setUnavailable = () => {
   if (visitCountElement) {
     visitCountElement.textContent = "visits unavailable";
-  }
-  if (onlineCountElement) {
-    onlineCountElement.textContent = "here now unavailable";
   }
 };
 
@@ -115,12 +129,15 @@ if (visitorId && visitId) {
     if (requestPending) return;
     requestPending = true;
     try {
-      const response = await fetch("/api/heartbeat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-        body: JSON.stringify({ visitorId, visitId }),
-      });
+      const response = await fetch(
+        "https://portfolio-nk5y.onrender.com/api/heartbeat",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          body: JSON.stringify({ visitorId, visitId }),
+        },
+      );
       if (!response.ok) {
         throw new Error(`Visitor count request failed (${response.status}).`);
       }
@@ -128,9 +145,7 @@ if (visitorId && visitId) {
       const counts = await response.json();
       if (
         !Number.isSafeInteger(counts.visits) ||
-        counts.visits < 0 ||
-        !Number.isSafeInteger(counts.hereNow) ||
-        counts.hereNow < 0
+        counts.visits < 0
       ) {
         throw new Error("Visitor count response was invalid.");
       }
@@ -139,9 +154,6 @@ if (visitorId && visitId) {
         visitCountElement.textContent = `${counts.visits} ${
           counts.visits === 1 ? "visit" : "visits"
         }`;
-      }
-      if (onlineCountElement) {
-        onlineCountElement.textContent = `${counts.hereNow} here now`;
       }
       failureReported = false;
     } catch (error) {

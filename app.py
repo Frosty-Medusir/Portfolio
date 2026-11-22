@@ -18,6 +18,9 @@ DATA_DIR = Path(
 DATABASE_PATH = DATA_DIR / "visitors.sqlite3"
 ONLINE_WINDOW_SECONDS = 120
 MAX_REQUEST_BYTES = 1024
+FRONTEND_ORIGIN = os.environ.get(
+    "FRONTEND_ORIGIN", "https://josephotieno1.netlify.app"
+).rstrip("/")
 
 
 def connect_database():
@@ -100,6 +103,9 @@ class PortfolioHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Vary", "Origin")
+        if self.headers.get("Origin") == FRONTEND_ORIGIN:
+            self.send_header("Access-Control-Allow-Origin", FRONTEND_ORIGIN)
         self.end_headers()
         self.wfile.write(body)
 
@@ -108,6 +114,38 @@ class PortfolioHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", "0")
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Vary", "Origin")
+        if self.headers.get("Origin") == FRONTEND_ORIGIN:
+            self.send_header("Access-Control-Allow-Origin", FRONTEND_ORIGIN)
+        self.end_headers()
+
+    def do_OPTIONS(self):
+        if urlsplit(self.path).path != "/api/heartbeat":
+            self.send_empty(404)
+            return
+
+        requested_headers = {
+            header.strip().lower()
+            for header in self.headers.get(
+                "Access-Control-Request-Headers", ""
+            ).split(",")
+            if header.strip()
+        }
+        if (
+            self.headers.get("Origin") != FRONTEND_ORIGIN
+            or self.headers.get("Access-Control-Request-Method", "").upper()
+            != "POST"
+            or not requested_headers.issubset({"content-type"})
+        ):
+            self.send_empty(403)
+            return
+
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", FRONTEND_ORIGIN)
+        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Max-Age", "600")
+        self.send_header("Vary", "Origin")
         self.end_headers()
 
     def do_HEAD(self):
