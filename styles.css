@@ -125,7 +125,6 @@ a:hover { color: var(--accent); }
   color: var(--muted);
   font-size: 10px;
 }
-.project-page-item .tracker-flow { max-width: 560px; }
 .project-page-item > .project-note { margin: 10px 0 0; }
 .experience-page-item .page-kicker { margin-bottom: 9px; }
 .experience-page-item .project-note { margin: 8px 0 0; }
