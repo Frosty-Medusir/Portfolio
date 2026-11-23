@@ -118,7 +118,7 @@ a:hover { color: var(--accent); }
 .project-page-heading h2, .experience-page-item h2 {
   margin: 0;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
 }
 .outbound-link {
   flex: 0 0 auto;
