@@ -79,17 +79,41 @@ const setUnavailable = () => {
   }
 };
 
+const createVisitorId = () => {
+  if (typeof crypto?.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto?.getRandomValues === "function") {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
+    return [
+      hex.slice(0, 4).join(""),
+      hex.slice(4, 6).join(""),
+      hex.slice(6, 8).join(""),
+      hex.slice(8, 10).join(""),
+      hex.slice(10).join(""),
+    ].join("-");
+  }
+  const randomHex = () =>
+    Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .slice(1);
+  return `${randomHex()}${randomHex()}-${randomHex()}-${randomHex()}-${randomHex()}-${randomHex()}${randomHex()}${randomHex()}`;
+};
+
 let visitorId;
 let visitId;
 try {
   visitorId = window.localStorage.getItem("portfolio-visitor-id");
   if (!visitorId) {
-    visitorId = crypto.randomUUID();
+    visitorId = createVisitorId();
     window.localStorage.setItem("portfolio-visitor-id", visitorId);
   }
   visitId = window.sessionStorage.getItem("portfolio-visit-id");
   if (!visitId) {
-    visitId = crypto.randomUUID();
+    visitId = createVisitorId();
     window.sessionStorage.setItem("portfolio-visit-id", visitId);
   }
 } catch (error) {
@@ -100,9 +124,16 @@ try {
 if (visitorId && visitId) {
   let requestPending = false;
   let failureReported = false;
+  let pollTimer;
+  const scheduleNextUpdate = (failed) => {
+    window.clearTimeout(pollTimer);
+    pollTimer = window.setTimeout(updateVisitorCounts, failed ? 60_000 : 30_000);
+  };
   const updateVisitorCounts = async () => {
     if (requestPending) return;
     requestPending = true;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 8_000);
     try {
       const response = await fetch(
         "https://portfolio-nk5y.onrender.com/api/heartbeat",
@@ -111,6 +142,7 @@ if (visitorId && visitId) {
           headers: { "Content-Type": "application/json" },
           cache: "no-store",
           body: JSON.stringify({ visitorId, visitId }),
+          signal: controller.signal,
         },
       );
       if (!response.ok) {
@@ -131,20 +163,25 @@ if (visitorId && visitId) {
         }`;
       }
       failureReported = false;
+      scheduleNextUpdate(false);
     } catch (error) {
       if (!failureReported) {
         console.error("Could not update shared visitor counts.", error);
         failureReported = true;
       }
       setUnavailable();
+      scheduleNextUpdate(true);
     } finally {
+      window.clearTimeout(timeout);
       requestPending = false;
     }
   };
 
   updateVisitorCounts();
-  window.setInterval(updateVisitorCounts, 30_000);
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") updateVisitorCounts();
+    if (document.visibilityState === "visible") {
+      window.clearTimeout(pollTimer);
+      updateVisitorCounts();
+    }
   });
 }
